@@ -9,11 +9,6 @@ const box = 20;
 let snake, food, dx, dy, score, gameInterval;
 let highScore = localStorage.getItem("highScore") || 0; // Load high score
 
-window.addEventListener("keydown", function(e) {
-    if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
-        e.preventDefault();
-    }
-}, false);
 
 function initGame() {
   snake = [{ x: 200, y: 200 }];
@@ -100,6 +95,13 @@ function gameOver() {
 function restartGame() {
   initGame();
 }
+
+window.addEventListener("keydown", function(e) {
+    if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+}, false);
+
 
 initGame();
 
