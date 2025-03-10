@@ -5,19 +5,27 @@ const restartBtn = document.getElementById("restartBtn");
 canvas.width = 400;
 canvas.height = 400;
 
-const box = 20;
+const box = 20; // Snake's size
 let snake, food, dx, dy, score, gameInterval;
 
 function initGame() {
   snake = [{ x: 200, y: 200 }];
-  food = { x: Math.floor(Math.random() * (canvas.width / box)) * box, 
-           y: Math.floor(Math.random() * (canvas.height / box)) * box };
   dx = box;
   dy = 0;
   score = 0;
-  restartBtn.style.display = "none";
+
+  spawnFood();
+
+  restartBtn.style.display = "none"; // Hide restart button
   if (gameInterval) clearInterval(gameInterval);
   gameInterval = setInterval(gameLoop, 100);
+}
+
+function spawnFood() {
+  food = {
+    x: Math.floor(Math.random() * (canvas.width / box)) * box,
+    y: Math.floor(Math.random() * (canvas.height / box)) * box,
+  };
 }
 
 document.addEventListener("keydown", changeDirection);
@@ -32,24 +40,29 @@ function changeDirection(event) {
 function update() {
   let newHead = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-  // Collision with walls or itself
-  if (newHead.x < 0 || newHead.y < 0 || newHead.x >= canvas.width || newHead.y >= canvas.height ||
-      snake.some(segment => newHead.x === segment.x && newHead.y === segment.y)) {
-    clearInterval(gameInterval);
-    restartBtn.style.display = "block";
+  // Check collisions with walls
+  if (newHead.x < 0 || newHead.y < 0 || newHead.x >= canvas.width || newHead.y >= canvas.height) {
+    gameOver();
     return;
   }
 
-  // Eat food
-  if (newHead.x === food.x && newHead.y === food.y) {
-    score++;
-    food = { x: Math.floor(Math.random() * (canvas.width / box)) * box, 
-             y: Math.floor(Math.random() * (canvas.height / box)) * box };
-  } else {
-    snake.pop();
+  // Check collision with itself
+  for (let segment of snake) {
+    if (newHead.x === segment.x && newHead.y === segment.y) {
+      gameOver();
+      return;
+    }
   }
 
-  snake.unshift(newHead);
+  // Check if snake eats food
+  if (newHead.x === food.x && newHead.y === food.y) {
+    score++;
+    spawnFood();
+  } else {
+    snake.pop(); // Remove the tail
+  }
+
+  snake.unshift(newHead); // Add new head to the snake
 }
 
 function draw() {
@@ -68,8 +81,13 @@ function gameLoop() {
   draw();
 }
 
+function gameOver() {
+  clearInterval(gameInterval);
+  restartBtn.style.display = "block";
+}
+
 function restartGame() {
   initGame();
 }
 
-initGame();
+initGame(); // Start the game
