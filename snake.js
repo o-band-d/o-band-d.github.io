@@ -5,11 +5,17 @@ const restartBtn = document.getElementById("restartBtn");
 canvas.width = 400;
 canvas.height = 400;
 
-const box = 20; // Snake's size
+const box = 20; // Size of each snake segment
 let snake, food, dx, dy, score, gameInterval;
 
+window.addEventListener("keydown", function(e) {
+    if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+}, false);
+
 function initGame() {
-  snake = [{ x: 200, y: 200 }];
+  snake = [{ x: 200, y: 200 }]; // Initialize snake at the center
   dx = box;
   dy = 0;
   score = 0;
@@ -40,7 +46,7 @@ function changeDirection(event) {
 function update() {
   let newHead = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-  // Check collisions with walls
+  // Check collision with walls
   if (newHead.x < 0 || newHead.y < 0 || newHead.x >= canvas.width || newHead.y >= canvas.height) {
     gameOver();
     return;
@@ -69,10 +75,10 @@ function draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = "lime";
+  ctx.fillStyle = "lime"; // Snake color
   snake.forEach(segment => ctx.fillRect(segment.x, segment.y, box, box));
 
-  ctx.fillStyle = "red";
+  ctx.fillStyle = "red"; // Food color
   ctx.fillRect(food.x, food.y, box, box);
 }
 
@@ -83,11 +89,12 @@ function gameLoop() {
 
 function gameOver() {
   clearInterval(gameInterval);
-  restartBtn.style.display = "block";
+  restartBtn.style.display = "block"; // Show restart button
 }
 
 function restartGame() {
   initGame();
 }
+
 
 initGame(); // Start the game
