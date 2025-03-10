@@ -1,15 +1,24 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const restartBtn = document.getElementById("restartBtn");
 
 canvas.width = 400;
 canvas.height = 400;
 
 const box = 20;
-let snake = [{ x: 200, y: 200 }];
-let food = { x: Math.floor(Math.random() * (canvas.width / box)) * box, 
-             y: Math.floor(Math.random() * (canvas.height / box)) * box };
-let dx = box, dy = 0;
-let score = 0;
+let snake, food, dx, dy, score, gameInterval;
+
+function initGame() {
+  snake = [{ x: 200, y: 200 }];
+  food = { x: Math.floor(Math.random() * (canvas.width / box)) * box, 
+           y: Math.floor(Math.random() * (canvas.height / box)) * box };
+  dx = box;
+  dy = 0;
+  score = 0;
+  restartBtn.style.display = "none";
+  if (gameInterval) clearInterval(gameInterval);
+  gameInterval = setInterval(gameLoop, 100);
+}
 
 document.addEventListener("keydown", changeDirection);
 
@@ -23,18 +32,12 @@ function changeDirection(event) {
 function update() {
   let newHead = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-  // Collision with walls
-  if (newHead.x < 0 || newHead.y < 0 || newHead.x >= canvas.width || newHead.y >= canvas.height) {
-    alert("Game Over! Score: " + score);
-    document.location.reload();
-  }
-
-  // Collision with itself
-  for (let segment of snake) {
-    if (newHead.x === segment.x && newHead.y === segment.y) {
-      alert("Game Over! Score: " + score);
-      document.location.reload();
-    }
+  // Collision with walls or itself
+  if (newHead.x < 0 || newHead.y < 0 || newHead.x >= canvas.width || newHead.y >= canvas.height ||
+      snake.some(segment => newHead.x === segment.x && newHead.y === segment.y)) {
+    clearInterval(gameInterval);
+    restartBtn.style.display = "block";
+    return;
   }
 
   // Eat food
@@ -65,4 +68,8 @@ function gameLoop() {
   draw();
 }
 
-setInterval(gameLoop, 100);
+function restartGame() {
+  initGame();
+}
+
+initGame();

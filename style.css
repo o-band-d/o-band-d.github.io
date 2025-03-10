@@ -1,2 +1,3 @@
 body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #333; }
 canvas { background: #000; }
+button { display: none; margin-top: 20px; padding: 10px 20px; font-size: 18px; cursor: pointer; }
